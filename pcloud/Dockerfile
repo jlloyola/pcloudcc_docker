@@ -13,10 +13,13 @@ RUN apt-get update \
        build-essential \
        git \
        make \
+       ca-certificates \
     && cd /usr/src \
     && git clone https://github.com/pcloudcom/console-client \
-    && sed 's/-mtune=.*//g' -i ./console-client/pCloudCC/lib/pclsync/Makefile \
-    && cd console-client/pCloudCC \
+    && cd console-client \
+    && COMMIT=$(git rev-parse HEAD) \
+    && sed 's/-mtune=.*//g' -i ./pCloudCC/lib/pclsync/Makefile \
+    && cd pCloudCC \
     && cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/usr . \
     && make pclsync mbedtls install/strip
 
@@ -32,5 +35,7 @@ COPY --from=builder /usr/bin/pcloudcc /usr/bin/pcloudcc
 COPY --from=builder /usr/lib/libpcloudcc_lib.so /usr/lib/libpcloudcc_lib.so
 
 STOPSIGNAL SIGKILL
+
+LABEL git-commit=$COMMIT
 
 CMD [ "pcloudcc" ]
