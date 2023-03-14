@@ -9,6 +9,7 @@ RUN apt-get update \
        libpthread-stubs0-dev \
        libfuse-dev \
        libudev-dev \
+       libsqlite3-dev \
        fuse \
        build-essential \
        git \
