@@ -19,7 +19,7 @@ RUN apt-get update \
     && git clone https://github.com/pcloudcom/console-client \
     && cd console-client \
     && COMMIT=$(git rev-parse HEAD) \
-    && sed 's/-mtune=.*//g' -i ./pCloudCC/lib/pclsync/Makefile \
+    && sed 's/-mtune=core2//g' -i ./pCloudCC/lib/pclsync/Makefile \
     && cd pCloudCC \
     && cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/usr . \
     && make pclsync mbedtls install/strip
