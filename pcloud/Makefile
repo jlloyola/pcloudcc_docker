@@ -3,10 +3,14 @@ help:
 	@echo Run 'make build' to build the docker image
 	@echo Run 'make push' to push the docker image to dockerhub
 
-build
-docker buildx build --pull  --progress=plain --no-cache --platform ${{ parameters.platforms }} --build-arg VERSION --build-arg version=$VERSION \
-          --build-arg build_version=$VERSION --build-arg build_base=${{ parameters.buildImageType }} \
-          --build-arg build_platform=${{ parameters.buildPhpVersion }} \
-          --tag ${{ parameters.repository }}:$LABEL \
-          --tag ${{ parameters.repository }}:$VERSION \
-          --push
+PLATFORM := linux/arm64
+REPOSITORY := jloyola/pcloud
+LABEL := latest
+VERSION := 0.1.0
+
+build:
+	docker buildx build -f Dockerfile \
+	--progress=plain --no-cache \
+	--platform $(PLATFORM) \
+	--tag $(REPOSITORY):$(LABEL) \
+	--tag $(REPOSITORY):$(VERSION) .
