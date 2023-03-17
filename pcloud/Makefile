@@ -13,4 +13,6 @@ build:
 	--progress=plain --no-cache \
 	--platform $(PLATFORM) \
 	--tag $(REPOSITORY):$(LABEL) \
-	--tag $(REPOSITORY):$(VERSION) .
+	--tag $(REPOSITORY):$(VERSION) \
+	$(BUILD_ARGS_EXTRA) \
+	.
