@@ -18,7 +18,8 @@ RUN apt-get update \
     && cd /usr/src \
     && git clone https://github.com/pcloudcom/console-client \
     && cd console-client \
-    && COMMIT=$(git rev-parse HEAD) \
+    && git fetch https://github.com/pcloudcom/console-client pull/163/head:mfa_branch \
+    && git checkout mfa_branch \
     && sed 's/-mtune=core2/-mtune=cortex-a72/g' -i ./pCloudCC/lib/pclsync/Makefile \
     && cd pCloudCC \
     && cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/usr . \
@@ -36,7 +37,5 @@ COPY --from=builder /usr/bin/pcloudcc /usr/bin/pcloudcc
 COPY --from=builder /usr/lib/libpcloudcc_lib.so /usr/lib/libpcloudcc_lib.so
 
 STOPSIGNAL SIGKILL
-
-LABEL git-commit=$COMMIT
 
 CMD [ "pcloudcc" ]
