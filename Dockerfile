@@ -33,9 +33,25 @@ RUN apt-get update \
        lsb-release \
     && rm -rf /var/lib/apt/lists/*
 
+ARG user=pcloud
+ARG group=pcloud
+ARG uid=1000
+ARG gid=1000
+ARG PCLOUD_DIR=/var/pcloud
+
+# pcloudcc is run with user `pcloud`, uid = 1000
+# Ensure you use the same uid and gid from the host
+# to avoid file permission issues.
+RUN mkdir -p $PCLOUD_DIR \
+  && chown ${uid}:${gid} $PCLOUD_DIR \
+  && groupadd -g ${gid} ${group} \
+  && useradd -d "$PCLOUD_DIR" -u ${uid} -g ${gid} -l -m -s /bin/bash ${user}
+
 COPY --from=builder /usr/bin/pcloudcc /usr/bin/pcloudcc
 COPY --from=builder /usr/lib/libpcloudcc_lib.so /usr/lib/libpcloudcc_lib.so
 
 STOPSIGNAL SIGKILL
+
+USER ${user}
 
 CMD [ "pcloudcc" ]
