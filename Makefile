@@ -20,16 +20,17 @@ build:
 USER_NAME ?= example@example.com
 USER_ID ?= $(shell id -u)
 USER_GROUP ?= $(shell id -g)
-SRC_CACHE := $(pwd)/pcloud_cache
+SRC_CACHE := ./.pcloud_cache
 DST_CACHE := /home/pcloud/.pcloud
-SRC_MOUNT := $(HOME)/pcloud
+SRC_MOUNT := $(HOME)/pCloudDrive
 DST_MOUNT := /var/pcloud
 
-#	docker run --rm -it
 init:
 	docker run -it \
 	-v $(SRC_CACHE):$(DST_CACHE) \
 	--mount type=bind,source=$(SRC_MOUNT),target=$(DST_MOUNT),bind-propagation=shared \
-	--device /dev/fuse --cap-add SYS_ADMIN \
+	--device /dev/fuse \
+	--cap-add SYS_ADMIN \
+	-u $(USER_ID):$(USER_GROUP) \
 	$(REPOSITORY):$(VERSION) \
 	pcloudcc -u $(USER_NAME) -s -m $(DST_MOUNT)
