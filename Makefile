@@ -28,7 +28,7 @@ init:
 	test -d $(SRC_MOUNT) || mkdir -p $(SRC_MOUNT)
 	docker run -it \
 	-v "$(SRC_CACHE):$(DST_CACHE)" \
-	-v "$(SRC_MOUNT):$(DST_MOUNT)" \
+	--mount type=bind,source=$(SRC_MOUNT),target=$(DST_MOUNT),bind-propagation=shared \
 	-e "PCLOUD_USERNAME=$(USER_NAME)" \
 	-e "PCLOUD_SAVE_PASSWORD=$(PCLOUD_SAVE_PASSWORD)" \
 	-e "PCLOUD_UID=$(USER_ID)" \
