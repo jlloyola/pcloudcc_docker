@@ -2,6 +2,11 @@
 
 set +H -euo pipefail
 
+if [ "${PCLOUD_DEBUG:=0}" == "1" ]; then
+  echo "# Enabling debug output"
+  set -x
+fi
+
 PCLOUD_DRIVE_PATH="/pCloudDrive/data"
 
 : ${PCLOUD_UID:=$(stat ${PCLOUD_DRIVE_PATH} -c '%u')}
@@ -40,9 +45,12 @@ fi
 echo "# Launching pcloud"
 # Only switch user if not running as target uid (ie. Docker)
 if [ "$PCLOUD_UID" = "$(id -u)" ]; then
+  set -x
   /usr/bin/pcloudcc "${ARGS[@]}"
 else
   mkdir -p ${PCLOUD_DRIVE_PATH}
   chown "${pcloud_user}:${pcloud_group}" ${PCLOUD_DRIVE_PATH}
+  chown -R "${pcloud_user}:${pcloud_group}" /home/${pcloud_user}
+  set -x
   exec gosu "${pcloud_user}" /usr/bin/pcloudcc "${ARGS[@]}"
 fi
