@@ -7,7 +7,7 @@ if [ "${PCLOUD_DEBUG:=0}" == "1" ]; then
   set -x
 fi
 
-PCLOUD_DRIVE_PATH="/pCloudDrive/data"
+PCLOUD_DRIVE_PATH="/pCloudDrive"
 
 : ${PCLOUD_UID:=$(stat ${PCLOUD_DRIVE_PATH} -c '%u')}
 : ${PCLOUD_GID:=$(stat ${PCLOUD_DRIVE_PATH} -c '%g')}

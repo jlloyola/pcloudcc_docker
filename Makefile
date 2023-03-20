@@ -22,7 +22,7 @@ USER_GROUP ?= $(shell id -g)
 SRC_CACHE := pcloud_cache
 DST_CACHE := /home/pcloud/.pcloud
 SRC_MOUNT := $(HOME)/pCloudDrive
-DST_MOUNT := /pCloudDrive/data
+DST_MOUNT := /pCloudDrive
 
 init:
 	test -d $(SRC_MOUNT) || mkdir -p $(SRC_MOUNT)
