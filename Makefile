@@ -5,32 +5,33 @@ help:
 
 PLATFORM := linux/arm64
 REPOSITORY := jloyola/pcloudcc
-LABEL := latest
-VERSION := 0.1.0
+LABEL := dev
 
 build:
 	docker buildx build -f Dockerfile \
 	--progress=plain --no-cache \
 	--platform $(PLATFORM) \
 	--tag $(REPOSITORY):$(LABEL) \
-	--tag $(REPOSITORY):$(VERSION) \
 	$(BUILD_ARGS_EXTRA) \
 	.
 
 USER_NAME ?= example@example.com
+PCLOUD_SAVE_PASSWORD ?= 1
 USER_ID ?= $(shell id -u)
 USER_GROUP ?= $(shell id -g)
-SRC_CACHE := ./.pcloud_cache
+SRC_CACHE := pcloud_cache
 DST_CACHE := /home/pcloud/.pcloud
 SRC_MOUNT := $(HOME)/pCloudDrive
-DST_MOUNT := /var/pcloud
+DST_MOUNT := /pCloudDrive/data
 
 init:
+	test -d $(SRC_MOUNT) || mkdir -p $(SRC_MOUNT)
 	docker run -it \
-	-v $(SRC_CACHE):$(DST_CACHE) \
-	--mount type=bind,source=$(SRC_MOUNT),target=$(DST_MOUNT),bind-propagation=shared \
-	--device /dev/fuse \
-	--cap-add SYS_ADMIN \
-	-u $(USER_ID):$(USER_GROUP) \
-	$(REPOSITORY):$(VERSION) \
-	pcloudcc -u $(USER_NAME) -s -m $(DST_MOUNT)
+	-v "$(SRC_CACHE):$(DST_CACHE)" \
+	-v "$(SRC_MOUNT):$(DST_MOUNT)" \
+	-e "PCLOUD_USERNAME=$(USER_NAME)" \
+	-e "PCLOUD_SAVE_PASSWORD=$(PCLOUD_SAVE_PASSWORD)" \
+	-e "PCLOUD_UID=$(USER_ID)" \
+	-e "PCLOUD_GID=$(USER_GROUP)" \
+	$(RUN_ARGS_EXTRA) \
+	$(REPOSITORY):$(LABEL)
