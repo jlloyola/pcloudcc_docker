@@ -33,5 +33,7 @@ init:
 	-e "PCLOUD_SAVE_PASSWORD=$(PCLOUD_SAVE_PASSWORD)" \
 	-e "PCLOUD_UID=$(USER_ID)" \
 	-e "PCLOUD_GID=$(USER_GROUP)" \
+	--device /dev/fuse \
+	--cap-add SYS_ADMIN \
 	$(RUN_ARGS_EXTRA) \
 	$(REPOSITORY):$(LABEL)
