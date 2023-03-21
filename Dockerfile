@@ -23,10 +23,14 @@ RUN apt-get update \
 
 WORKDIR /usr/src
 
+# Tune the build for Arm Cortex 72 (PI4)
 ARG mtune=cortex-a72
+# Pin the repo to the latest tested commit.
+ARG console_client_sha=4b42e3c8a90696ca9ba0a7e162fcbcd62ad2e306
 
 RUN git clone https://github.com/pcloudcom/console-client \
     && cd console-client \
+    && git reset --hard ${console_client_sha} \
     && git fetch https://github.com/pcloudcom/console-client pull/163/head:mfa_branch \
     && git checkout mfa_branch \
     && sed "s/-mtune=core2/-mtune=${mtune}/g" -i ./pCloudCC/lib/pclsync/Makefile \
