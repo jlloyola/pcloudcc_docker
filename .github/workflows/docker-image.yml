@@ -1,0 +1,61 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+    tags: [ 'v*' ]
+    
+env:
+  DOCKER_HUB_NAMESPACE: jloyola
+  DOCKER_HUB_REPO: pcloudcc
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        flavor: [ debian ]
+        include:
+          - flavor: debian
+            dockerfile: ./contrib/docker/Dockerfile-debian
+#             platforms: linux/amd64,linux/arm64,linux/arm/v7
+            platforms: linux/arm64
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+  
+    - name: Docker meta
+      id: docker_meta
+      uses: docker/metadata-action@v4
+      with:
+        images: |
+          ${{ env.DOCKER_HUB_NAMESPACE }}/${{ env.DOCKER_HUB_REPO }}
+          flavor: ${{ matrix.flavor }}
+    
+    - name: Setup qemu
+      uses: docker/setup-qemu-action@v2
+      with:
+        image: tonistiigi/binfmt:latest
+        platforms: all
+      if: matrix.platforms != 'linux/amd64'
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      if: github.event_name != 'pull_request'
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+    - name: Build and Push to Docker
+      uses: docker/build-push-action@v3
+      with:
+        context: .
+        file: ${{ matrix.dockerfile }}
+        platforms: ${{ matrix.platforms }}
+        push: false
+        tags: ${{ steps.docker_meta.outputs.tags }}
+        labels: ${{ steps.docker_meta.outputs.labels }}
