@@ -33,7 +33,7 @@ RUN git clone https://github.com/pcloudcom/console-client \
     && git reset --hard ${console_client_sha} \
     && git fetch https://github.com/pcloudcom/console-client pull/163/head:mfa_branch \
     && git checkout mfa_branch \
-    && sed "s/-mtune=core2/-mtune=${mtune}/g" -i ./pCloudCC/lib/pclsync/Makefile \
+    && if [[ "${TARGETARCH}" != "amd64" ]] ; then sed "s/-mtune=core2/-mtune=${mtune}/g" -i ./pCloudCC/lib/pclsync/Makefile ; fi \
     && cd pCloudCC \
     && cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/usr . \
     && make pclsync mbedtls install/strip
