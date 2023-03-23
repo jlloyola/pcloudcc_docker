@@ -37,3 +37,6 @@ init:
 	--cap-add SYS_ADMIN \
 	$(RUN_ARGS_EXTRA) \
 	$(REPOSITORY):$(LABEL)
+
+act:
+	act --secret-file .act
