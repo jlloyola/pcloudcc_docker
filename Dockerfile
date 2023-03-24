@@ -32,8 +32,24 @@ RUN git clone https://github.com/pcloudcom/console-client \
     && cd console-client \
     && git reset --hard ${console_client_sha} \
     && git fetch https://github.com/pcloudcom/console-client pull/163/head:mfa_branch \
-    && git checkout mfa_branch \
-    && if [[ "${TARGETARCH}" != "amd64" ]] ; then sed "s/-mtune=core2/-mtune=${mtune}/g" -i ./pCloudCC/lib/pclsync/Makefile ; fi \
+    && git checkout mfa_branch
+
+ARG TARGETARCH
+ARG TARGETPLATFORM
+RUN cd console-client \
+    && if [[ "${TARGETARCH}" = "amd64" ]] ; \
+        then export MTUNE_ARG="-mtune=native" ; \
+    elif [[ "${TARGETARCH}" = "arm64" ]] ; \
+        # https://github.com/pcloudcom/console-client/issues/175
+        then export MTUNE_ARG="-mtune=cortex-a72" ; \
+    elif [[ "${TARGETARCH}" = "arm" ]] ; \
+        # https://github.com/pcloudcom/console-client/issues/49
+        then export MTUNE_ARG="-fomit-frame-pointer" ; \
+    fi \
+    && echo "TARGETPLATFORM: ${TARGETPLATFORM}" \
+    && echo "TARGETARCH: ${TARGETARCH}" \
+    && echo "MTUNE_ARG: ${MTUNE_ARG}" \
+    && sed "s#-mtune=core2#${MTUNE_ARG}#g" -i ./pCloudCC/lib/pclsync/Makefile \
     && cd pCloudCC \
     && cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/usr . \
     && make pclsync mbedtls install/strip
