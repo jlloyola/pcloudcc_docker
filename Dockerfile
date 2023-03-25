@@ -28,29 +28,30 @@ ARG mtune=cortex-a72
 # Pin the repo to the latest tested commit.
 ARG console_client_sha=4b42e3c8a90696ca9ba0a7e162fcbcd62ad2e306
 
-RUN git clone https://github.com/pcloudcom/console-client \
+RUN cd /usr/src \
+    && git clone https://github.com/pcloudcom/console-client \
     && cd console-client \
     && git reset --hard ${console_client_sha} \
     && git fetch https://github.com/pcloudcom/console-client pull/163/head:mfa_branch \
     && git checkout mfa_branch
 
+# Patch -mtune arg
+# https://github.com/pcloudcom/console-client/issues/49
+# https://github.com/pcloudcom/console-client/issues/175
 ARG TARGETARCH
 ARG TARGETPLATFORM
-RUN cd console-client \
-    && if [[ "${TARGETARCH}" = "amd64" ]] ; \
-        then export MTUNE_ARG="-mtune=native" ; \
-    elif [[ "${TARGETARCH}" = "arm64" ]] ; \
-        # https://github.com/pcloudcom/console-client/issues/175
-        then export MTUNE_ARG="-mtune=cortex-a72" ; \
-    elif [[ "${TARGETARCH}" = "arm" ]] ; \
-        # https://github.com/pcloudcom/console-client/issues/49
-        then export MTUNE_ARG="-fomit-frame-pointer" ; \
-    fi \
+WORKDIR /usr/src/console-client
+RUN MTUNE_ARG=$(case ${TARGETPLATFORM:-linux/arm64} in \
+    "linux/amd64")   echo "-mtune=native" ;; \
+    "linux/arm/v7")  echo "-fomit-frame-pointer" ;; \
+    "linux/arm64")   echo "-mtune=cortex-a72" ;; \
+    *)               echo "-mtune=core2" ;; esac) \
     && echo "TARGETPLATFORM: ${TARGETPLATFORM}" \
     && echo "TARGETARCH: ${TARGETARCH}" \
     && echo "MTUNE_ARG: ${MTUNE_ARG}" \
-    && sed "s#-mtune=core2#${MTUNE_ARG}#g" -i ./pCloudCC/lib/pclsync/Makefile \
-    && cd pCloudCC \
+    && sed "s#-mtune=core2#${MTUNE_ARG}#g" -i ./pCloudCC/lib/pclsync/Makefile
+
+RUN cd pCloudCC \
     && cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/usr . \
     && make pclsync mbedtls install/strip
 
