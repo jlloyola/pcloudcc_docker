@@ -36,12 +36,14 @@ RUN cd /usr/src \
 WORKDIR /usr/src/console-client
 # Remove -mtune arg
 # https://github.com/pcloudcom/console-client/issues/175
-RUN sed "s/-mtune=core2//g" -i ./pCloudCC/lib/pclsync/Makefile
+ARG TARGETPLATFORM
+RUN if [ "${TARGETPLATFORM}" != "linux/amd64" ] ; then \
+        sed "s/-mtune=core2//g" -i ./pCloudCC/lib/pclsync/Makefile ; \
+    fi
 
 # Patch mbedtls to work on arm/v7
 # https://github.com/pcloudcom/console-client/issues/49
 # https://github.com/Mbed-TLS/mbedtls-docs/blob/main/kb/development/arm-thumb-error-r7-cannot-be-used-in-asm-here.md
-ARG TARGETPLATFORM
 RUN if [ "${TARGETPLATFORM}" = "linux/arm/v7" ] ; then \
         sed "s/-Wall/-Wall -fomit-frame-pointer/g" -i ./pCloudCC/lib/mbedtls/CMakeLists.txt ; \
     fi
