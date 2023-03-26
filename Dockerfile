@@ -23,8 +23,6 @@ RUN apt-get update \
 
 WORKDIR /usr/src
 
-# Tune the build for Arm Cortex 72 (PI4)
-ARG mtune=cortex-a72
 # Pin the repo to the latest tested commit.
 ARG console_client_sha=4b42e3c8a90696ca9ba0a7e162fcbcd62ad2e306
 
@@ -35,21 +33,18 @@ RUN cd /usr/src \
     && git fetch https://github.com/pcloudcom/console-client pull/163/head:mfa_branch \
     && git checkout mfa_branch
 
-# Patch -mtune arg
-# https://github.com/pcloudcom/console-client/issues/49
-# https://github.com/pcloudcom/console-client/issues/175
-ARG TARGETARCH
-ARG TARGETPLATFORM
 WORKDIR /usr/src/console-client
-RUN MTUNE_ARG=$(case ${TARGETPLATFORM:-linux/arm64} in \
-    "linux/amd64")   echo "-mtune=native" ;; \
-    "linux/arm/v7")  echo "-fomit-frame-pointer" ;; \
-    "linux/arm64")   echo "-mtune=cortex-a72" ;; \
-    *)               echo "-mtune=core2" ;; esac) \
-    && echo "TARGETPLATFORM: ${TARGETPLATFORM}" \
-    && echo "TARGETARCH: ${TARGETARCH}" \
-    && echo "MTUNE_ARG: ${MTUNE_ARG}" \
-    && sed "s#-mtune=core2#${MTUNE_ARG}#g" -i ./pCloudCC/lib/pclsync/Makefile
+# Remove -mtune arg
+# https://github.com/pcloudcom/console-client/issues/175
+RUN sed "s/-mtune=core2//g" -i ./pCloudCC/lib/pclsync/Makefile
+
+# Patch mbedtls to work on arm/v7
+# https://github.com/pcloudcom/console-client/issues/49
+# https://github.com/Mbed-TLS/mbedtls-docs/blob/main/kb/development/arm-thumb-error-r7-cannot-be-used-in-asm-here.md
+ARG TARGETPLATFORM
+RUN if [ "${TARGETPLATFORM}" = "linux/arm/v7" ] ; then \
+        sed "s/-Wall/-Wall -fomit-frame-pointer/g" -i ./pCloudCC/lib/mbedtls/CMakeLists.txt ; \
+    fi
 
 RUN cd pCloudCC \
     && cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/usr . \
