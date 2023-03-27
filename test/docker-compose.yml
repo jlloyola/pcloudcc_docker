@@ -1,0 +1,33 @@
+version: "3.6"
+
+services:
+
+  pcloud:
+    image: "${TEST_IMAGE}"
+    volumes:
+      - type: volume
+        source: pcloud_cache
+        target: /home/pcloud/.pcloud
+      - type: bind
+        bind:
+          propagation: shared
+        source: "${PCLOUD_DRIVE}"
+        target: /pCloudDrive
+    secrets:
+      - pcloud_secret
+    devices:
+      - "/dev/fuse:/dev/fuse"
+    cap_add:
+      - SYS_ADMIN
+    environment:
+      - PCLOUD_USERNAME=${PCLOUD_USERNAME}
+      - PCLOUD_PASSWORD_FILE=/run/secrets/pcloud_secret
+      - PCLOUD_UID=${PCLOUD_UID}
+      - PCLOUD_GID=${PCLOUD_GID}
+
+volumes:
+  pcloud_cache:
+
+secrets:
+  pcloud_secret:
+    environment: "PCLOUD_SECRET"
