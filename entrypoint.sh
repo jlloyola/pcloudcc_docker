@@ -42,15 +42,24 @@ if [ -n "${PCLOUD_USERNAME:=""}" ]; then
   ARGS=(-u ${PCLOUD_USERNAME} ${ARGS[@]})
 fi
 
+# Conditionally pass the password
+# from a password file or stdin
+# https://stackoverflow.com/a/1987599
+password_file_stdin="/dev/stdin"
+if [ -n "${PCLOUD_PASSWORD_FILE:=""}" ]; then
+  password_file_stdin="${PCLOUD_PASSWORD_FILE}"
+  ARGS=(-p ${ARGS[@]})
+fi
+
 echo "# Launching pcloud"
 # Only switch user if not running as target uid (ie. Docker)
 if [ "$PCLOUD_UID" = "$(id -u)" ]; then
   set -x
-  /usr/bin/pcloudcc "${ARGS[@]}"
+  /usr/bin/pcloudcc "${ARGS[@]}" < ${password_file_stdin}
 else
   mkdir -p ${PCLOUD_DRIVE_PATH}
   chown "${pcloud_user}:${pcloud_group}" ${PCLOUD_DRIVE_PATH}
   chown -R "${pcloud_user}:${pcloud_group}" /home/${pcloud_user}
   set -x
-  exec gosu "${pcloud_user}" /usr/bin/pcloudcc "${ARGS[@]}"
+  exec gosu "${pcloud_user}" /usr/bin/pcloudcc "${ARGS[@]}" < ${password_file_stdin}
 fi
