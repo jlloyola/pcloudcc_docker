@@ -52,10 +52,24 @@ docker compose -f ./test/docker-compose.yml \
     --env-file ${ENV_FILE} \
     -p ${testId} \
     up --detach --wait
-sleep 10
 
 # Extract the ID of the test container
 containerId=`docker container ls -f name=${testId} --format "{{.Names}}"`
+
+# Wait until the container is ready
+MAX_WAIT_TIME=10
+WAITED=0
+while [ $WAITED -lt $MAX_WAIT_TIME ] && ! docker logs $containerId | grep -q "READY"
+do
+  echo "Waiting for container to be ready..."
+  sleep 1
+  WAITED=$((WAITED+1))
+done
+
+if [ $WAITED -ge $MAX_WAIT_TIME ]; then
+  echo "Container did not become ready within $MAX_WAIT_TIME seconds"
+  exit 1
+fi
 
 echo "-----------------------------------------------------"
 echo " Check read access from container"
@@ -91,7 +105,7 @@ compareTestStrings "container write" "${testStr}" "${testOut}"
 if [[ $? -ne 0 ]] ; then
     exit 1
 fi
-sleep 10
+
 docker compose -f ./test/docker-compose.yml \
     --env-file ${ENV_FILE} \
     -p ${testId} \
