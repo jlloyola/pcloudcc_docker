@@ -38,5 +38,10 @@ init:
 	$(RUN_ARGS_EXTRA) \
 	$(REPOSITORY):$(LABEL)
 
+
+ACT_CMD := act --secret-file .act -e test/actEvent.json --rm
 act:
-	act --secret-file .act
+	$(ACT_CMD)
+
+actn:
+	$(ACT_CMD) -n
