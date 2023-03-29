@@ -28,6 +28,7 @@ testTimestamp=`date +%Y%m%d%H%M%S`
 imageNameStr=$(sed -r 's#[:/\.]#_#g' <<<"$dockerImage")
 testId="${imageNameStr}_${testTimestamp}"
 echo "test ID: ${testId}"
+echo "Running as $USER"
 
 # Define test attributes and create env file
 USER_ID=`id -u`
