@@ -5,12 +5,12 @@ set -eo pipefail
 function compareTestStrings() {
   if [[ "$2" == "$3" ]]; then
     echo "Check $1 PASSED"
-    return 0
+    rm $4
   else
     echo "$1 FAILED"
     echo "Expected: $2"
     echo "Received: $3"
-    return 1
+    exit 1
   fi
 }
 
@@ -84,11 +84,7 @@ outFile=${DRIVE_DST_MOUNT}/${testId}_${testStr}
 testOut=`docker exec -u ${USER_ID}:${USER_GROUP} ${containerId} cat ${outFile}`
 ls -al $testFile
 
-compareTestStrings "container read" "${testStr}" "${testOut}"
-if [[ $? -ne 0 ]] ; then
-    exit 1
-fi
-
+compareTestStrings "container read" "${testStr}" "${testOut}" "${testFile}"
 
 echo "-----------------------------------------------------"
 echo " Check write access from container"
@@ -101,10 +97,7 @@ docker exec -u ${USER_ID}:${USER_GROUP} ${containerId} bash -c "touch ${testFile
 testOut=`cat ${outFile}`
 ls -al $outFile
 
-compareTestStrings "container write" "${testStr}" "${testOut}"
-if [[ $? -ne 0 ]] ; then
-    exit 1
-fi
+compareTestStrings "container write" "${testStr}" "${testOut}" "${outFile}"
 
 docker compose -f ./test/docker-compose.yml \
     --env-file ${ENV_FILE} \
