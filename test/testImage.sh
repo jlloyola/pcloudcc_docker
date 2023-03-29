@@ -25,7 +25,7 @@ fi
 
 # Test run metadata
 testTimestamp=`date +%Y%m%d%H%M%S`
-imageNameStr=$(sed -r 's#[:/]#_#g' <<<"$dockerImage")
+imageNameStr=$(sed -r 's#[:/\.]#_#g' <<<"$dockerImage")
 testId="${imageNameStr}_${testTimestamp}"
 echo "test ID: ${testId}"
 
