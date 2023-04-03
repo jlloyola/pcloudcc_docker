@@ -46,7 +46,7 @@ jobs:
     - name: Login to Docker Hub
       uses: docker/login-action@v2
       with:
-        username: ${{ secrets.DOCKER_USERNAME }}
+        username: ${{ env.DOCKER_HUB_NAMESPACE }}
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
     - name: Build and export to Docker
@@ -60,7 +60,7 @@ jobs:
         labels: ${{ steps.docker_meta.outputs.labels }}
 
     - name: Validate image
-      run: test/testEntrypoint.sh ${{ steps.docker_meta.outputs.tags }}
+      run: test/testImage.sh ${{ steps.docker_meta.outputs.tags }}
       env:
         PCLOUD_USERNAME: ${{ secrets.PCLOUD_USERNAME }}
         PCLOUD_SECRET: ${{ secrets.PCLOUD_SECRET }}
