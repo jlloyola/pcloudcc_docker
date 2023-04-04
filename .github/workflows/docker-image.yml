@@ -20,8 +20,7 @@ jobs:
         include:
           - flavor: debian
             dockerfile: ./Dockerfile
-            # platforms: linux/amd64,linux/arm64,linux/arm/v7
-            platforms: linux/arm64,linux/arm/v7
+            platforms: linux/amd64,linux/arm64,linux/arm/v7
 
     steps:
     - name: Checkout
@@ -48,22 +47,6 @@ jobs:
       with:
         username: ${{ env.DOCKER_HUB_NAMESPACE }}
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
-    - name: Build and export to Docker
-      uses: docker/build-push-action@v3
-      with:
-        context: .
-        file: ${{ matrix.dockerfile }}
-        platforms: linux/arm64
-        load: true
-        tags: ${{ steps.docker_meta.outputs.tags }}
-        labels: ${{ steps.docker_meta.outputs.labels }}
-
-    - name: Validate image
-      run: test/testImage.sh ${{ steps.docker_meta.outputs.tags }}
-      env:
-        PCLOUD_USERNAME: ${{ secrets.PCLOUD_USERNAME }}
-        PCLOUD_SECRET: ${{ secrets.PCLOUD_SECRET }}
 
     - name: Build and Push to Docker
       uses: docker/build-push-action@v3
