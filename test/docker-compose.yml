@@ -3,7 +3,7 @@ version: "3.6"
 services:
 
   pcloud:
-    image: "${TEST_IMAGE}"
+    image: "${PCLOUD_IMAGE}"
     volumes:
       - type: volume
         source: pcloud_cache
