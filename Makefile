@@ -1,11 +1,12 @@
-
+.PHONY: help build init act actn test
 help:
-	@echo Run 'make build' to build the docker image
-	@echo Run 'make push' to push the docker image to dockerhub
+	@echo Run 'make build' to build the docker image locally
+	@echo Run 'env PCLOUD_USERNAME="<pcloud_user>" PCLOUD_SECRET=<secret> make test' to run a basic functionality test
 
 PLATFORM := linux/arm64
 REPOSITORY := jloyola/pcloudcc
 LABEL := dev
+IMAGE_NAME := $(REPOSITORY):$(LABEL)
 
 build:
 	docker buildx build -f Dockerfile \
@@ -15,7 +16,7 @@ build:
 	$(BUILD_ARGS_EXTRA) \
 	.
 
-USER_NAME ?= example@example.com
+PCLOUD_USERNAME ?= example@example.com
 PCLOUD_SAVE_PASSWORD ?= 1
 USER_ID ?= $(shell id -u)
 USER_GROUP ?= $(shell id -g)
@@ -29,7 +30,7 @@ init:
 	docker run -it \
 	-v "$(SRC_CACHE):$(DST_CACHE)" \
 	--mount type=bind,source=$(SRC_MOUNT),target=$(DST_MOUNT),bind-propagation=shared \
-	-e "PCLOUD_USERNAME=$(USER_NAME)" \
+	-e "PCLOUD_USERNAME=$(PCLOUD_USERNAME)" \
 	-e "PCLOUD_SAVE_PASSWORD=$(PCLOUD_SAVE_PASSWORD)" \
 	-e "PCLOUD_UID=$(USER_ID)" \
 	-e "PCLOUD_GID=$(USER_GROUP)" \
@@ -45,3 +46,6 @@ act:
 
 actn:
 	$(ACT_CMD) -n
+
+test:
+	./test/testImage.sh $(IMAGE_NAME)
