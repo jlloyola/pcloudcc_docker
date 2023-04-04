@@ -33,12 +33,12 @@ fi
 ARGS=(-m ${PCLOUD_DRIVE_PATH})
 echo "Base Args: ${ARGS}"
 
-if [ "${PCLOUD_SAVE_PASSWORD:-0}" == "1" ]; then
+if [ -n "${PCLOUD_SAVE_PASSWORD:=''}" ]; then
   echo "# Adding -s to save password"
   ARGS=(-s ${ARGS[@]})
 fi
 
-if [ -n "${PCLOUD_USERNAME:=""}" ]; then
+if [ -n "${PCLOUD_USERNAME:=''}" ]; then
   ARGS=(-u ${PCLOUD_USERNAME} ${ARGS[@]})
 fi
 
