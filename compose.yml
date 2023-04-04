@@ -1,0 +1,28 @@
+version: "3.6"
+
+services:
+
+  pcloud:
+    image: "${PCLOUD_IMAGE}"
+    stdin_open: true
+    tty: true
+    volumes:
+      - type: volume
+        source: pcloud_cache
+        target: /home/pcloud/.pcloud
+      - type: bind
+        bind:
+          propagation: shared
+        source: "${PCLOUD_DRIVE}"
+        target: /pCloudDrive
+    devices:
+      - "/dev/fuse:/dev/fuse"
+    cap_add:
+      - SYS_ADMIN
+    environment:
+      - PCLOUD_USERNAME=${PCLOUD_USERNAME}
+      - PCLOUD_UID=${PCLOUD_UID}
+      - PCLOUD_GID=${PCLOUD_GID}
+
+volumes:
+  pcloud_cache:
