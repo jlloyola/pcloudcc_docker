@@ -31,6 +31,7 @@ Enter the relevant information for your setup:
 |PCLOUD_UID          |Your host user id (obtained above)          |1000                   |
 |PCLOUD_GID          |Your host group id (obtained above)         |1000                   |
 |PCLOUD_SAVE_PASSWORD|Save password in cache volume               |1                      |
+
 Example `.env` file:  
 ```
 PCLOUD_IMAGE=jloyola/pcloudcc:latest
