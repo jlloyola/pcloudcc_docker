@@ -33,7 +33,7 @@ echo "Running as $USER"
 # Define test attributes and create env file
 USER_ID=`id -u`
 USER_GROUP=`id -g`
-DRIVE_SRC_MOUNT=${HOME}/pCloudDrive
+DRIVE_SRC_MOUNT=${HOME}/${testId}
 DRIVE_DST_MOUNT=/pCloudDrive
 ENV_FILE=./.test_env
 
@@ -47,7 +47,7 @@ EOL
 
 # Create the source mount directory if needed
 test -d ${DRIVE_SRC_MOUNT} || mkdir -p ${DRIVE_SRC_MOUNT}
-
+echo `ls -ld ${DRIVE_SRC_MOUNT}`
 # Start the test container
 docker compose -f ./test/docker-compose.yml \
     --env-file ${ENV_FILE} \
