@@ -56,8 +56,9 @@ folder will be given 'root' permissions, which then causes the Docker container 
 ROOT level privileges prohibited!
 ```
 ### 4. Initial run
-Copy the compose.yml file from this repo and place it in the
-same location as your `.env` file
+Copy the [compose.yml](https://github.com/jlloyola/pcloudcc_docker/blob/main/compose.yml)
+file from this repo and place it in the same location as
+your `.env` file
 You will need to login the initial run.
 ```
 % docker compose up -d
