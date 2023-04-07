@@ -1,6 +1,9 @@
 # pcloudcc_docker
-[![Build](https://github.com/jlloyola/pcloudcc_docker/actions/workflows/docker-image.yml/badge.svg)](https://github.com/jlloyola/pcloudcc_docker/actions)  
-[![Pull](https://img.shields.io/docker/pulls/jloyola/pcloudcc)](https://hub.docker.com/r/jloyola/pcloudcc)  
+<p>
+<a href="https://github.com/jlloyola/pcloudcc_docker/actions"><img alt="Actions Status" src="https://github.com/jlloyola/pcloudcc_docker/actions/workflows/docker-image.yml/badge.svg"></a>
+<a href="https://hub.docker.com/r/jloyola/pcloudcc"><img alt="Docker pulls" src="https://img.shields.io/docker/pulls/jloyola/pcloudcc"></a>
+<a href="https://github.com/jlloyola/pcloudcc_docker/blob/main/LICENSE"><img alt="License: GPL-3.0" src="https://img.shields.io/github/license/jlloyola/pcloudcc_docker"></a>
+</p>
 
 This repo defines a Dockerfile to build the
 [pcloud console client](https://github.com/pcloudcom/console-client)
