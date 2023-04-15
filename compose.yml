@@ -4,6 +4,7 @@ services:
 
   pcloud:
     image: "${PCLOUD_IMAGE}"
+    restart: unless-stopped
     stdin_open: true
     tty: true
     volumes:
