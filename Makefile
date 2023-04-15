@@ -1,4 +1,4 @@
-.PHONY: help build init act actn test
+.PHONY: help build init act actn test compose stop
 help:
 	@echo Run 'make build' to build the docker image locally
 	@echo Run 'env PCLOUD_USERNAME="<pcloud_user>" PCLOUD_SECRET=<secret> make test' to run a basic functionality test
@@ -49,3 +49,9 @@ actn:
 
 test:
 	./test/testImage.sh $(IMAGE_NAME)
+
+compose:
+	docker compose --env-file .test_env up -d
+
+stop:
+	docker compose down
