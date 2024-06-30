@@ -54,4 +54,4 @@ compose:
 	docker compose --env-file .test_env up -d
 
 stop:
-	docker compose down
+	docker compose --env-file .test_env down
